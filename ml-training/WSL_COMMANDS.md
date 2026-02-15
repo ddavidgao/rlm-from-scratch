@@ -1,4 +1,16 @@
-# WSL Docker Commands Reference
+# WSL Commands Reference
+
+## ml
+
+Activates the `~/ml-env` Python venv with PyTorch installed. Use this for running scripts directly.
+
+```bash
+ml                          # Activates the ml-env venv
+cdml                        # cd to ml-training directory
+python barebones_llm.py     # Then run whatever script
+```
+
+---
 
 ## unsloth
 
