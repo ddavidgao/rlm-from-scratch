@@ -1,0 +1,70 @@
+NATIONAL SCIENCE FOUNDATION
+GRANT PROPOSAL — PROJECT ABSTRACT
+
+Award Number: NSF-AGS-2025-XXXXX (Pending)
+Program: Atmosphere and Geospace Sciences — Climate and Large-Scale Dynamics
+Title: Adaptive Neural Networks for Real-Time Climate Modeling
+
+PRINCIPAL INVESTIGATOR
+Dr. James Morrison, Ph.D.
+Associate Professor, Department of Atmospheric Sciences
+Pacific Northwest Research Institute (PNRI)
+4200 Cascade Research Boulevard, Seattle, WA 98103
+Email: j.morrison@pnri.edu | Phone: (206) 555-0234
+
+CO-PRINCIPAL INVESTIGATORS
+- Dr. Amara Osei, Assistant Professor of Computer Science, PNRI
+- Dr. Kevin Zhao, Research Scientist, NOAA Pacific Marine Environmental Laboratory
+
+REQUESTED FUNDING
+Total: $742,000 over 36 months (3 years)
+Year 1: $268,000 | Year 2: $251,000 | Year 3: $223,000
+
+PROJECT SUMMARY
+
+1. RESEARCH OBJECTIVES
+Current global climate models (GCMs) require enormous computational resources and typically operate at spatial resolutions of 50-100 km, which is insufficient to capture critical mesoscale phenomena such as convective systems, land-sea breezes, and orographic precipitation. This project proposes the development of Adaptive Climate Neural Networks (ACNNs) — a novel deep learning architecture that dynamically adjusts model resolution and computational allocation based on detected atmospheric complexity.
+
+The primary objectives are:
+(a) Design and train a multi-scale neural network architecture capable of predicting atmospheric state variables (temperature, pressure, humidity, wind fields) at variable resolutions from 5 km to 100 km.
+(b) Develop an attention-based mechanism that identifies regions of high atmospheric variability and automatically allocates finer resolution to those areas in real-time.
+(c) Validate ACNN predictions against ERA5 reanalysis data and operational weather model output (GFS, ECMWF IFS) over a three-year historical period (2020-2022).
+(d) Demonstrate that ACNN can produce 72-hour regional climate forecasts at 10 km effective resolution with less than 5% of the computational cost of a traditional GCM running at equivalent resolution.
+
+2. METHODOLOGY
+The ACNN architecture builds upon recent advances in vision transformers and neural operator theory. The model uses a U-Net backbone with transformer-based skip connections that process atmospheric data at multiple spatial scales simultaneously. A novel "atmospheric attention" module scores each grid cell based on local gradient magnitudes of temperature, humidity, and vorticity, then routes computational resources accordingly.
+
+Training data will consist of ERA5 reanalysis fields (1979-2022) at 0.25° resolution, augmented with high-resolution WRF simulations over the Pacific Northwest and North Atlantic basins. The training pipeline will leverage PNRI's GPU cluster (128 NVIDIA A100 GPUs) and will employ a curriculum learning strategy, starting from coarse-resolution predictions and progressively increasing target resolution over training.
+
+Transfer learning experiments will assess the model's ability to generalize to geographical regions not included in training data (e.g., South Asian monsoon region, Sahel). Uncertainty quantification will be performed using Monte Carlo dropout and deep ensemble methods.
+
+3. EXPECTED OUTCOMES
+- A publicly available ACNN model and codebase (released under MIT License on GitHub)
+- At least four peer-reviewed publications in journals including Nature Climate Change, Journal of Geophysical Research: Atmospheres, and Artificial Intelligence for the Earth Systems
+- Demonstrated 15-20x speedup over conventional dynamical downscaling methods with comparable accuracy (target RMSE within 10% of WRF benchmarks)
+- Open training dataset of paired coarse/fine resolution atmospheric fields
+
+4. BROADER IMPACTS
+This research addresses the critical need for accessible, high-resolution climate information for adaptation planning. The computational efficiency gains of ACNN will enable smaller research institutions, developing nations, and local governments to generate regional climate projections without access to supercomputing facilities. The project will support two Ph.D. students and one postdoctoral researcher, with active recruitment from underrepresented groups in atmospheric science through PNRI's partnership with the AMS Student Diversity Program.
+
+Community engagement includes annual workshops with Washington State emergency management officials to translate research outputs into actionable climate resilience tools. Educational outreach will develop a freely available online module "AI and Climate Science" suitable for undergraduate atmospheric science and data science curricula.
+
+5. KEY PERSONNEL
+- Dr. James Morrison (PI): 3 months/year — Climate modeling, project leadership
+- Dr. Amara Osei (Co-PI): 2 months/year — Neural network architecture design, ML training pipeline
+- Dr. Kevin Zhao (Co-PI): 1 month/year — NOAA data integration, model validation
+- TBD Postdoctoral Researcher: 12 months/year — Core model development
+- TBD Ph.D. Student 1: Research assistantship — Attention mechanism development
+- TBD Ph.D. Student 2: Research assistantship — Transfer learning and validation
+
+6. TIMELINE
+Phase 1 (Months 1-12): Data pipeline construction, baseline model architecture, preliminary training experiments
+Phase 2 (Months 13-24): Full ACNN training, atmospheric attention module refinement, initial validation against ERA5
+Phase 3 (Months 25-36): Transfer learning experiments, operational forecast demonstrations, publication of results, public code and data release
+
+BUDGET JUSTIFICATION (SUMMARY)
+- Personnel (salaries + benefits): $498,000
+- Computing resources (GPU allocation, cloud credits): $108,000
+- Travel (conferences, NOAA collaboration visits): $36,000
+- Equipment (workstations, storage): $52,000
+- Indirect costs (PNRI negotiated rate 26%): $48,000

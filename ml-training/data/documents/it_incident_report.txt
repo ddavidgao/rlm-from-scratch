@@ -1,0 +1,85 @@
+IT INCIDENT REPORT
+
+Incident ID: INC-2025-0892
+Report Date: January 21, 2025
+Report Author: Priya Sharma, Senior Site Reliability Engineer
+Organization: NovaTech Solutions Inc.
+
+INCIDENT CLASSIFICATION
+- Severity: P1 — Critical (complete service outage affecting external customers)
+- Category: Infrastructure — Storage / Database
+- Service(s) Affected: Production Database Cluster (db-prod-01 through db-prod-04), Customer Portal (portal.novatech.io), REST API Gateway (api.novatech.io), Internal Analytics Dashboard
+- Business Impact: Complete loss of customer-facing services; internal teams unable to access operational data
+
+DETECTION AND NOTIFICATION
+- Detection Time: 2025-01-20 03:42 UTC
+- Detection Method: Automated — PagerDuty alert triggered by Datadog monitor "db-prod write latency > 500ms" followed 2 minutes later by "db-prod connection pool exhaustion" alert
+- First Responder: Priya Sharma (on-call SRE), acknowledged alert at 03:47 UTC
+- Incident Commander: Marcus Chen, Director of Engineering (joined at 04:05 UTC)
+
+TIMELINE OF EVENTS (all times UTC)
+
+03:42 — Datadog alert fires: write latency on db-prod-01 exceeds 500ms threshold. Average write latency had been 12ms over the previous 24 hours.
+
+03:44 — Second alert: connection pool utilization on db-prod-01 reaches 95%. Cascading alerts begin for db-prod-02 through db-prod-04 as read replicas fall behind on replication.
+
+03:47 — Priya Sharma acknowledges PagerDuty alert. Initial triage begins. SSH into db-prod-01 shows iostat reporting >98% disk utilization with average write queue depth of 247 (normal: <5).
+
+03:55 — Sharma identifies that the underlying storage array (NetStore SX-9000, Firmware v4.2.1) is reporting intermittent write acknowledgment failures. Storage controller logs show "SCSI sense key: MEDIUM ERROR" on multiple LUNs.
+
+04:02 — Customer portal begins returning HTTP 503 errors. API gateway health check failures trigger automatic removal from load balancer. Status page updated to "Major Outage — Investigating."
+
+04:05 — Marcus Chen joins incident bridge call. Decision made to escalate to P1 and engage NetStore vendor support.
+
+04:15 — NetStore on-call engineer (Raj Patel) joins the call. Reviews storage controller diagnostics remotely. Identifies firmware bug in v4.2.1 that causes write cache coherency failures under sustained sequential write patterns exceeding 850 MB/s. Bug was documented in NetStore advisory NS-SA-2024-0847, published December 12, 2024, but had not been applied to NovaTech's environment.
+
+04:30 — Decision made to failover database to standby storage array (NetStore SX-9000 unit 2, firmware v4.1.9, not affected by the bug). Database team begins controlled shutdown of primary database cluster.
+
+04:45 — Primary database cluster shut down cleanly. Filesystem integrity check initiated on standby storage.
+
+05:12 — Filesystem check complete — no corruption detected. Database cluster restart initiated against standby storage.
+
+05:38 — db-prod-01 (primary) comes online on standby storage. Write tests confirm normal latency (8ms average). Replication to db-prod-02 through db-prod-04 initiated.
+
+06:15 — All four database nodes confirmed healthy. Read replica lag cleared. Connection pool utilization normal at 23%.
+
+06:22 — API gateway health checks passing. Customer portal restored. Status page updated to "Monitoring — Services Restored."
+
+07:15 — Extended monitoring period shows stable performance. Replication lag: 0ms. Write latency: 11ms average. No errors in storage controller logs.
+
+08:05 — Incident downgraded from P1 to P3 (monitoring). All-clear notification sent to engineering and customer success teams.
+
+ROOT CAUSE
+The root cause was a firmware bug in NetStore SX-9000 firmware version 4.2.1 that caused write cache coherency failures when sustained sequential write throughput exceeded 850 MB/s. This triggered cascading write acknowledgment failures across multiple LUNs, causing the database's I/O subsystem to stall. The bug was documented in NetStore Security Advisory NS-SA-2024-0847 (published December 12, 2024) with a recommended upgrade to firmware v4.2.2. NovaTech's storage environment had not yet been patched due to the change being scheduled for the January 25, 2025 maintenance window.
+
+IMPACT SUMMARY
+- Total Downtime: 4 hours 23 minutes (03:42 — 08:05 UTC)
+- Customer-Facing Outage: 4 hours 20 minutes (04:02 — 08:22 UTC, including DNS cache propagation delay)
+- Users Impacted: Approximately 15,000 active users during the outage window (based on typical traffic patterns for Monday 03:00-08:00 UTC)
+- Revenue Impact: Estimated $47,000 in lost transaction processing fees
+- SLA Impact: Monthly uptime dropped to 99.38%, below the 99.9% SLA commitment. SLA credit of 10% monthly fee applicable for affected enterprise customers.
+- Data Loss: None confirmed. All transactions were either completed before the outage or safely rolled back. WAL (Write-Ahead Log) integrity verified.
+
+RESOLUTION
+Immediate: Failed over production database cluster to standby storage array running unaffected firmware v4.1.9.
+
+FOLLOW-UP ACTIONS
+| # | Action Item | Owner | Due Date | Status |
+|---|-------------|-------|----------|--------|
+| 1 | Apply NetStore firmware v4.2.2 to primary storage array | Infra Team | 2025-01-25 | Scheduled |
+| 2 | Apply firmware v4.2.2 to standby storage array | Infra Team | 2025-01-26 | Scheduled |
+| 3 | Implement automated vendor advisory monitoring | SRE Team | 2025-02-07 | In Progress |
+| 4 | Add storage throughput alerting (>800 MB/s warning) | SRE Team | 2025-01-31 | In Progress |
+| 5 | Review and accelerate critical patch SLA (target: 7 days) | Infra Lead | 2025-02-14 | Not Started |
+| 6 | Conduct failover drill for database-to-standby-storage | DB Team | 2025-02-28 | Not Started |
+| 7 | Customer communication: post-mortem blog post | Comms Team | 2025-01-24 | Draft |
+
+LESSONS LEARNED
+1. Vendor security advisories must be triaged within 48 hours of publication, not batched into monthly maintenance windows.
+2. Storage throughput monitoring had a gap — existing alerts focused on latency and IOPS but did not cover sustained sequential write bandwidth.
+3. The failover to standby storage, while successful, took longer than target RTO (2 hours) due to lack of a documented runbook. The team improvised under pressure.
+4. Automated health checks correctly detected the outage within 2 minutes — this investment in observability paid off.
+
+Reviewed and Approved By:
+Marcus Chen, Director of Engineering
+Date: January 22, 2025

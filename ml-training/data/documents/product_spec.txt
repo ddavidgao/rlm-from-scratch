@@ -1,0 +1,58 @@
+ThermoSense Pro X1 — Smart Thermostat Product Specification Sheet
+
+Model Number: TS-PRO-X1-2024
+Manufacturer: ThermoSense Technologies Inc.
+Release Date: September 2024
+
+OVERVIEW
+The ThermoSense Pro X1 is a next-generation smart thermostat designed for residential and light commercial HVAC systems. It combines precision temperature control with advanced environmental monitoring to optimize comfort and energy efficiency. The device features a 3.5-inch full-color LCD touchscreen with ambient light adaptive brightness.
+
+DIMENSIONS AND PHYSICAL SPECIFICATIONS
+- Display Unit: 4.3 in (W) x 4.3 in (H) x 1.1 in (D)
+- Weight: 6.2 oz (display unit), 2.1 oz (backplate)
+- Display: 3.5-inch IPS LCD, 320x320 resolution, capacitive touch
+- Finish: Matte white (TS-PRO-X1-W) or brushed nickel (TS-PRO-X1-N)
+
+FEATURES
+- WiFi Connectivity: 802.11 b/g/n (2.4 GHz) and 802.11 ac (5 GHz)
+- Geofencing: Automatic home/away detection using smartphone GPS with configurable radius from 500 ft to 5 miles
+- Humidity Sensor: Integrated capacitive humidity sensor, ±2% RH accuracy, range 0-99% RH
+- Air Quality Monitor: Built-in VOC sensor and particulate matter estimator (PM2.5) with real-time AQI display
+- Occupancy Detection: Dual passive infrared (PIR) sensors with 120° field of view
+- Ambient Light Sensor: Automatic display brightness adjustment
+- Learning Algorithm: Proprietary AdaptiveComfort AI learns household patterns within 7-14 days of installation
+
+TEMPERATURE SPECIFICATIONS
+- Operating Range: 40°F to 95°F (4.4°C to 35°C)
+- Temperature Accuracy: ±0.5°F (±0.3°C)
+- Setpoint Range: 45°F to 90°F (7.2°C to 32.2°C)
+- Differential: Adjustable from 0.5°F to 3.0°F
+
+POWER REQUIREMENTS
+- Primary Power: 24 VAC from HVAC system (C-wire required)
+- Backup Battery: Built-in rechargeable lithium-polymer, maintains settings for up to 4 hours during power loss
+- Power Consumption: 2.5W typical, 4W maximum
+
+COMPATIBILITY
+- HVAC Systems: Supports 1-stage, 2-stage, and variable-speed heating and cooling; heat pump with auxiliary heat; dual-fuel systems
+- Smart Home Integration: Amazon Alexa, Google Home, Apple HomeKit, Samsung SmartThings
+- Protocols: Zigbee 3.0 hub built-in, Matter-ready via firmware update (Q1 2025)
+- Mobile App: iOS 15+ and Android 10+ (ThermoSense Connect app)
+
+INSTALLATION REQUIREMENTS
+- Wiring: Requires C-wire (common wire). C-wire adapter kit sold separately ($29.99)
+- Wall Box: Standard single-gang electrical box or direct wall mount
+- Clearance: Minimum 4 inches clearance on all sides for accurate temperature reading
+- Professional installation recommended; DIY installation guide included
+
+WARRANTY AND PRICING
+- Warranty: 2-year limited manufacturer warranty covering defects in materials and workmanship; extended 5-year warranty available for $39.99
+- MSRP: $249.99
+- In the Box: Display unit, backplate, mounting screws, wire labels, trim plate, quick start guide, screwdriver
+
+CERTIFICATIONS
+- FCC Part 15 Class B, UL 60730-1, Energy Star Certified, EPA SmartSense Partner
+- Operating Temperature (Ambient): 32°F to 120°F
+- Operating Humidity: 5% to 95% non-condensing
+
+For technical support contact support@thermosense.com or call 1-888-THERMO-1. Full documentation available at docs.thermosense.com/pro-x1.

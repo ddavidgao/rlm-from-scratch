@@ -2,6 +2,9 @@
 .claude/memory/
 CLAUDE.md
 
+# Training data generation prompts (not project code)
+ml-training/generate_training_data_prompt.md
+
 # Claude local settings
 .claude/settings.local.json
 
@@ -26,4 +29,5 @@ ml-training/wandb/
 ml-training/rlm_lora_output/
 ml-training/.cache/
 ml-training/outputs/
+ml-training/archive/
 *.safetensors

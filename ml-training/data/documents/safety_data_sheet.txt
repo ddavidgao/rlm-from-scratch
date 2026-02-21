@@ -1,0 +1,88 @@
+SAFETY DATA SHEET
+According to Regulation (EC) No. 1907/2006 (REACH), GHS Rev. 7
+
+SECTION 1: IDENTIFICATION
+Product Name: CleanMax Industrial Degreaser
+Product Code: CM-DG-500
+Supplier: CleanMax Chemical Solutions, 4100 Industrial Parkway, Houston, TX 77040
+Emergency Phone: CHEMTREC 1-800-424-9300 (24 hours)
+Information Phone: (713) 555-0198
+Recommended Use: Industrial degreasing of metal parts, machinery, and equipment
+Restrictions on Use: Not for household use. Not for use on food contact surfaces.
+
+SECTION 2: HAZARD IDENTIFICATION
+GHS Classification:
+- Acute Toxicity, Oral: Category 4
+- Skin Irritation: Category 2
+- Serious Eye Irritation: Category 2A
+
+Signal Word: WARNING
+
+Hazard Statements:
+- H302: Harmful if swallowed
+- H315: Causes skin irritation
+- H319: Causes serious eye irritation
+
+Precautionary Statements:
+- P264: Wash hands and exposed skin thoroughly after handling
+- P270: Do not eat, drink, or smoke when using this product
+- P280: Wear protective gloves, eye protection, and protective clothing
+- P301+P312: IF SWALLOWED: Call a POISON CENTER if you feel unwell
+- P302+P352: IF ON SKIN: Wash with plenty of soap and water
+- P305+P351+P338: IF IN EYES: Rinse cautiously with water for several minutes. Remove contact lenses, if present and easy to do. Continue rinsing.
+- P332+P313: If skin irritation occurs: Get medical advice
+- P337+P313: If eye irritation persists: Get medical advice
+
+SECTION 3: COMPOSITION / INFORMATION ON INGREDIENTS
+Component                  | CAS Number   | Concentration (w/w)
+---------------------------|--------------|--------------------
+2-Butoxyethanol            | 111-76-2     | 15 — 20%
+Sodium Hydroxide           | 1310-73-2    | 5 — 10%
+Sodium Metasilicate        | 6834-92-0    | 3 — 7%
+Alkyl Polyglucoside (C8-C10)| 68515-73-1  | 2 — 5%
+Water                      | 7732-18-5    | Balance (60 — 75%)
+
+SECTION 4: FIRST AID MEASURES
+Inhalation: Move person to fresh air. If breathing is difficult, administer oxygen. If not breathing, give artificial respiration. Seek medical attention if symptoms persist.
+Skin Contact: Remove contaminated clothing immediately. Wash affected area with plenty of soap and water for at least 15 minutes. If irritation develops or persists, seek medical attention.
+Eye Contact: Rinse cautiously with water for at least 15 minutes, lifting upper and lower eyelids periodically. Remove contact lenses if present. Seek immediate medical attention if irritation persists.
+Ingestion: Do NOT induce vomiting. Rinse mouth with water. Do not give anything by mouth to an unconscious person. Seek immediate medical attention. Contact Poison Control Center at 1-800-222-1222.
+
+SECTION 5: FIREFIGHTING MEASURES
+Suitable Extinguishing Media: Water spray, dry chemical, CO2, alcohol-resistant foam
+Unsuitable: Full water jet (may cause splashing and spread of product)
+Flash Point: 143°F (62°C) — closed cup method (ASTM D93)
+Auto-Ignition Temperature: 460°F (238°C)
+Flammable Limits: LEL 1.1%, UEL 12.7% (based on 2-butoxyethanol component)
+Special Hazards: Thermal decomposition may produce carbon monoxide, carbon dioxide, and sodium oxide fumes.
+Firefighter Protection: Wear self-contained breathing apparatus (SCBA) and full protective gear.
+
+SECTION 6: ACCIDENTAL RELEASE MEASURES
+Contain spill with inert absorbent material (sand, vermiculite, diatomaceous earth). Collect in appropriate waste container. Prevent entry into drains, sewers, or waterways. For large spills (>55 gallons), notify local environmental authority.
+
+SECTION 7: HANDLING AND STORAGE
+Handling: Use only with adequate ventilation. Avoid contact with skin, eyes, and clothing. Do not mix with acids (reaction produces heat and may cause spattering).
+Storage: Store in original container in a cool, dry, well-ventilated area between 15°C and 30°C (59°F — 86°F). Keep container tightly closed when not in use. Store away from incompatible materials (acids, oxidizers). Shelf life: 24 months from date of manufacture when stored as directed.
+
+SECTION 8: EXPOSURE CONTROLS / PERSONAL PROTECTION
+Occupational Exposure Limits:
+- 2-Butoxyethanol: OSHA PEL TWA 50 ppm (skin), ACGIH TLV TWA 25 ppm (skin)
+- Sodium Hydroxide: OSHA PEL Ceiling 2 mg/m³, ACGIH TLV Ceiling 2 mg/m³
+
+Engineering Controls: Use local exhaust ventilation or mechanical ventilation to maintain airborne concentrations below exposure limits.
+Personal Protective Equipment:
+- Respiratory: NIOSH-approved respirator with organic vapor cartridges if ventilation is inadequate
+- Hands: Chemical-resistant gloves (nitrile, minimum 8 mil thickness)
+- Eyes: Chemical splash goggles or face shield
+- Skin: Chemical-resistant apron; long sleeves recommended
+
+SECTION 13: DISPOSAL CONSIDERATIONS
+Dispose of in accordance with all applicable federal, state, and local regulations. Do not dump into sewers or waterways. Container must be triple-rinsed before recycling or disposal. Waste code: D002 (corrosive waste, pH-dependent). Contact local hazardous waste facility for disposal options.
+
+SECTION 14: TRANSPORT INFORMATION
+DOT Classification: UN1760, Corrosive Liquid, N.O.S. (contains sodium hydroxide), Class 8, Packing Group III
+IATA: Same as DOT
+IMDG: Same as DOT
+
+SDS Revision Date: October 15, 2024 | Version 3.1
+Prepared by: CleanMax EHS Department

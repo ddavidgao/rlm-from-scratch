@@ -1,0 +1,66 @@
+WATER QUALITY ANALYSIS REPORT
+
+Clearwater Municipal Water Treatment Plant
+2850 Reservoir Drive, Clearwater, WA 98501
+Laboratory Report No.: CW-2025-01-0347
+
+SAMPLE INFORMATION
+- Sample Collection Date: January 8, 2025
+- Sample Receipt Date: January 8, 2025
+- Analysis Completion Date: January 12, 2025
+- Sample Type: Treated Drinking Water (post-filtration, post-disinfection)
+- Sample Point: Distribution System Entry Point, Plant Outlet Tap #3
+- Collected By: Michael Torres, Certified Water Operator (License WA-4521)
+- Chain of Custody ID: COC-20250108-047
+
+ANALYTICAL RESULTS
+
+Parameter                  | Result    | Unit       | MCL/Standard  | Status
+---------------------------|-----------|------------|---------------|----------
+pH                         | 7.2       | pH units   | 6.5 - 8.5    | PASS
+Turbidity                  | 0.3       | NTU        | 1.0 NTU       | PASS
+Free Chlorine Residual     | 1.2       | mg/L       | 4.0 mg/L max  | PASS
+Total Chlorine Residual    | 1.5       | mg/L       | 4.0 mg/L max  | PASS
+Lead (Pb)                  | <0.005    | mg/L       | 0.015 mg/L    | PASS
+Copper (Cu)                | 0.42      | mg/L       | 1.3 mg/L      | PASS
+Arsenic (As)               | <0.002    | mg/L       | 0.010 mg/L    | PASS
+Nitrate (as N)             | 3.1       | mg/L       | 10.0 mg/L     | PASS
+Nitrite (as N)             | <0.05     | mg/L       | 1.0 mg/L      | PASS
+Fluoride                   | 0.7       | mg/L       | 4.0 mg/L      | PASS
+Total Coliform             | Absent    | per 100 mL | Absent        | PASS
+E. coli                    | Absent    | per 100 mL | Absent        | PASS
+Total Dissolved Solids     | 287       | mg/L       | 500 mg/L      | PASS
+Hardness (as CaCO3)        | 142       | mg/L       | N/A (secondary)| INFO
+Alkalinity (as CaCO3)      | 98        | mg/L       | N/A           | INFO
+Sulfate                    | 45        | mg/L       | 250 mg/L      | PASS
+Chloride                   | 32        | mg/L       | 250 mg/L      | PASS
+Iron (Fe)                  | 0.08      | mg/L       | 0.3 mg/L      | PASS
+Manganese (Mn)             | 0.02      | mg/L       | 0.05 mg/L     | PASS
+Total Trihalomethanes      | 38        | µg/L       | 80 µg/L       | PASS
+Haloacetic Acids (HAA5)    | 29        | µg/L       | 60 µg/L       | PASS
+
+MICROBIOLOGICAL ANALYSIS
+Method: EPA Method 1604 (Total Coliform/E. coli), Colilert-18 IDEXX
+Total Coliform: Absent in all five 100 mL sample portions
+E. coli: Absent in all five 100 mL sample portions
+Heterotrophic Plate Count: 12 CFU/mL (standard: <500 CFU/mL) — PASS
+
+COMPLIANCE STATUS
+All parameters tested are within compliance limits established by the U.S. Environmental Protection Agency (EPA) Safe Drinking Water Act (SDWA) and Washington State Department of Health regulations (WAC 246-290). The water quality at the distribution entry point meets all primary and secondary maximum contaminant levels (MCLs) as of the analysis date.
+
+NOTES
+- Total hardness of 142 mg/L as CaCO3 classifies this water as "moderately hard" on the USGS hardness scale. This is within the typical range for the Clearwater source aquifer.
+- Fluoride is maintained at the CDC-recommended optimal level of 0.7 mg/L for dental health benefits.
+- Total trihalomethanes and haloacetic acids, while within limits, are monitored quarterly as disinfection byproducts. Values have remained stable over the past four quarters (range: 32-41 µg/L TTHM, 24-33 µg/L HAA5).
+
+QUALITY ASSURANCE
+Laboratory blank, duplicate, and matrix spike results were within acceptable QC limits for all analyses. The laboratory is certified under Washington State Department of Ecology Accreditation Program (Lab ID: WA-ELAP-1138).
+
+Reviewed and Approved By:
+Dr. Sarah Chen, Ph.D.
+Director of Analytical Services
+Clearwater Environmental Testing Laboratory
+Washington State Certified Analyst #SC-7823
+
+Report Date: January 14, 2025
+This report shall not be reproduced except in full without written consent.
