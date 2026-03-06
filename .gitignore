@@ -31,3 +31,6 @@ ml-training/.cache/
 ml-training/outputs/
 ml-training/archive/
 *.safetensors
+
+# llama.cpp clones (used for GGUF conversion, not project code)
+ml-training/8b/llama.cpp/

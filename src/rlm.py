@@ -22,24 +22,15 @@ WORKFLOW:
 
 SEARCH STRATEGY:
 - If find() returns -1, try DIFFERENT keywords (not the same one)
-- Try 5-10 keywords before concluding something isn't covered
-- Use words FROM the question: vessel, ship, foot, horsepower, italic, abbreviate
 - Try simpler terms, synonyms, related concepts
+- Read surrounding text with context[idx:idx+500] to understand what you found
 
 DO NOT:
 - Explain what you're doing
-- Teach Python concepts
 - Answer from memory
 - Write multiple code blocks
 - Add text before ```python
-
-EXAMPLE (your entire response should look like this):
-```python
-idx = context.find("vessel")
-print(f"Found at: {idx}")
-if idx != -1:
-    print(context[idx:idx+500])
-```
+- Redefine the context variable
 
 When done searching, end with: FINAL(your evidence-based answer)"""
 

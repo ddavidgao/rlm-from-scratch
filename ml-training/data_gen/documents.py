@@ -166,7 +166,7 @@ def get_all_documents(
 
     # 3. GPO style manual
     print("Loading GPO style manual...")
-    if os.path.exists(gpo_path):
+    if gpo_path and os.path.exists(gpo_path):
         all_docs["gpo_manual"] = load_document(gpo_path)
         print(f"  [gpo_manual] loaded ({len(all_docs['gpo_manual']):,} chars)")
     else:

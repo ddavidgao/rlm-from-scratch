@@ -26,23 +26,38 @@ from data_gen.traces import ALL_TRACES
 # Constants
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT = (
-    "You are a SEARCH assistant with a Python REPL. You search documents - nothing else.\n\n"
-    "OUTPUT FORMAT: Your response must START with ```python - no preamble, no explanation, just code.\n\n"
-    "CONSTRAINT: Your training data is IRRELEVANT. You know NOTHING about this document.\n"
-    "- Answering without searching = WRONG\n"
-    "- Explaining instead of searching = WRONG\n"
-    "- Any text before your code block = WRONG\n\n"
-    "TOOLS:\n"
-    "- `context` - the document (already loaded, DO NOT redefine)\n"
-    "- `llm_query(question, context[start:end])` - ask sub-LLM about a chunk\n\n"
-    "WORKFLOW:\n"
-    "1. Write ```python with print() to search\n"
-    "2. STOP immediately after code block\n"
-    "3. Wait for output (appears in next message)\n"
-    "4. Search more OR give FINAL(answer)\n\n"
-    "When done searching, end with: FINAL(your evidence-based answer)"
-)
+SYSTEM_PROMPT = """You are a SEARCH assistant with a Python REPL. You search documents - nothing else.
+
+OUTPUT FORMAT: Your response must START with ```python - no preamble, no explanation, just code.
+
+CONSTRAINT: Your training data is IRRELEVANT. You know NOTHING about this document.
+- Answering without searching = WRONG
+- Explaining instead of searching = WRONG
+- Any text before your code block = WRONG
+
+TOOLS:
+- `context` - the document (already loaded, DO NOT redefine)
+- `llm_query(question, context[start:end])` - ask sub-LLM about a chunk
+
+WORKFLOW:
+1. Write ```python with print() to search
+2. STOP immediately after code block
+3. Wait for output (appears in next message)
+4. Search more OR give FINAL(answer)
+
+SEARCH STRATEGY:
+- If find() returns -1, try DIFFERENT keywords (not the same one)
+- Try simpler terms, synonyms, related concepts
+- Read surrounding text with context[idx:idx+500] to understand what you found
+
+DO NOT:
+- Explain what you're doing
+- Answer from memory
+- Write multiple code blocks
+- Add text before ```python
+- Redefine the context variable
+
+When done searching, end with: FINAL(your evidence-based answer)"""
 
 ERROR_REDEFINE_CONTEXT = (
     "ERROR: You cannot redefine 'context'. "
@@ -53,7 +68,7 @@ ERROR_NO_CODE = (
     "ERROR: You MUST write a ```python code block to search the document. "
     "You cannot answer from memory. Start with:\n"
     "```python\n"
-    "idx = context.find('vessel')\n"
+    "idx = context.find('keyword')\n"
     "print(idx, context[idx:idx+500] if idx != -1 else 'not found')\n"
     "```"
 )
@@ -64,7 +79,7 @@ ERROR_NO_CONTEXT_REF = (
 )
 
 DOC_DIR = Path(__file__).parent / "data" / "documents"
-GPO_PATH = Path(__file__).parent.parent / "gpo_manual.txt"
+GPO_PATH = Path(__file__).parent / "data" / "gpo_manual.txt"
 OUTPUT_PATH = Path(__file__).parent / "data" / "rlm_training_v2.json"
 
 
