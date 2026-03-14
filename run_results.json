@@ -88,5 +88,115 @@
     "time_seconds": 707.51,
     "score": 0.0,
     "answer_preview": "ERROR: Max iterations reached without conclusion"
+  },
+  {
+    "run_id": 10,
+    "timestamp": "2026-03-12T15:19:04.294701",
+    "total_llm_calls": 3,
+    "root_iterations": 3,
+    "sub_llm_calls": 0,
+    "time_seconds": 1.88,
+    "score": 0.43,
+    "answer_preview": "The formatting rules for the table entry are:\n\n1. The ship's name should be in title case (U.S.S. Katahdin).\n2. The ship's length and horsepower must be in inches and pounds, respectively.\n3. The engi"
+  },
+  {
+    "run_id": 11,
+    "timestamp": "2026-03-12T15:22:35.643920",
+    "total_llm_calls": 3,
+    "root_iterations": 3,
+    "sub_llm_calls": 0,
+    "time_seconds": 2.26,
+    "score": 0.29,
+    "answer_preview": "The formatting rules for a table entry in the government report are as follows:\n\n1. The title of the ship should be centered and in all capital letters.\n2. The class or type of vessel should be listed"
+  },
+  {
+    "run_id": 12,
+    "model": "rlm-8b-sft",
+    "timestamp": "2026-03-12T15:56:51.648511",
+    "total_llm_calls": 3,
+    "root_iterations": 3,
+    "sub_llm_calls": 0,
+    "time_seconds": 1.66,
+    "score": 0.14,
+    "unique_keywords": 2,
+    "repeated_keywords": 2,
+    "chars_read": 0,
+    "doc_coverage_pct": 0.0,
+    "keywords_searched": [
+      "U.S.S.",
+      "US",
+      "U.S.S.",
+      "US"
+    ],
+    "rule_verdicts": {
+      "Vessel names NOT italicized in tables": "MISSED",
+      "U. S. S. with periods and spaces": "MISSED",
+      "Hyphenate 150-foot compound adjective": "MISSED",
+      "Hyphenate navy-yard": "MISSED",
+      "Use Pa. abbreviation for Pennsylvania": "MISSED",
+      "Abbreviate Lieut. Commander with name": "FOUND",
+      "Keep United States Navy spelled out": "MISSED"
+    },
+    "answer_preview": "The formatting rules for a table entry in the government report are:\n\n1. The title of the ship must be in all capital letters.\n2. The type of vessel (gunboat) and its dimensions (150 feet) must be inc"
+  },
+  {
+    "run_id": 13,
+    "model": "rlm-8b-sft",
+    "timestamp": "2026-03-12T16:00:02.726092",
+    "total_llm_calls": 3,
+    "root_iterations": 3,
+    "sub_llm_calls": 0,
+    "time_seconds": 2.1,
+    "score": 0.0,
+    "unique_keywords": 2,
+    "repeated_keywords": 2,
+    "chars_read": 500,
+    "doc_coverage_pct": 0.34,
+    "keywords_searched": [
+      "U.S.S.",
+      "US",
+      "U.S.S.",
+      "US"
+    ],
+    "rule_verdicts": {
+      "Vessel names NOT italicized in tables": "MISSED",
+      "U. S. S. with periods and spaces": "WRONG",
+      "Hyphenate 150-foot compound adjective": "MISSED",
+      "Hyphenate navy-yard": "WRONG",
+      "Use Pa. abbreviation for Pennsylvania": "MISSED",
+      "Abbreviate Lieut. Commander with name": "WRONG",
+      "Keep United States Navy spelled out": "MISSED"
+    },
+    "answer_preview": "The formatting rules for a table entry in the government report are as follows:\n\n1. The title of the ship should be centered and in all capital letters.\n2. The length, horsepower, and location of the "
+  },
+  {
+    "run_id": 14,
+    "model": "rlm-8b-sft",
+    "timestamp": "2026-03-13T20:47:23.839927",
+    "total_llm_calls": 5,
+    "root_iterations": 5,
+    "sub_llm_calls": 0,
+    "time_seconds": 38.23,
+    "score": 0.0,
+    "unique_keywords": 2,
+    "repeated_keywords": 2,
+    "chars_read": 500,
+    "doc_coverage_pct": 0.34,
+    "keywords_searched": [
+      "U.S.S.",
+      "US",
+      "U.S.S.",
+      "US"
+    ],
+    "rule_verdicts": {
+      "Vessel names NOT italicized in tables": "MISSED",
+      "U. S. S. with periods and spaces": "WRONG",
+      "Hyphenate 150-foot compound adjective": "MISSED",
+      "Hyphenate navy-yard": "MISSED",
+      "Use Pa. abbreviation for Pennsylvania": "MISSED",
+      "Abbreviate Lieut. Commander with name": "MISSED",
+      "Keep United States Navy spelled out": "MISSED"
+    },
+    "answer_preview": "The formatting rules for the table entry are as follows:\n\n1. The title should be in all capital letters.\n2. The ship's name and designation (e.g., U.S.S.) should be centered above the line of dashes.\n"
   }
 ]

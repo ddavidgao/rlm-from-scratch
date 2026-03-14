@@ -1,69 +1,104 @@
 import json
 import os
+import re
 from datetime import datetime
 from src.rlm import RLM
-from src.llm import chat_llm
-
-GRADER_MODEL = "qwen3-coder:30b"
-
-# --- BASELINE ANSWER (what the RLM should find) ---
-EXPECTED_ERRORS = [
-    "Vessel names are NOT italicized in tabular matter (exception to italic rule)",
-    "Use 'U. S. S.' with periods and spaces, not 'U.S.S.'",
-    "Hyphenate compound adjective: '150-foot' not '150 foot'",
-    "Hyphenate 'navy-yard' per compounding rules",
-    "Use 'Pa.' after navy-yards: 'League Island Navy-Yard, Pa.'",
-    "Abbreviate 'Lieut. Commander' when Christian name/initial is used",
-    "Keep 'United States Navy' spelled out when written that way (not U. S. N.)",
-]
 
 RESULTS_FILE = "run_results.json"
 
+# --- DETERMINISTIC RULE CHECKERS ---
+# Each checker is a tuple: (rule_name, check_function)
+# check_function takes the answer string, returns "FOUND" / "MISSED" / "WRONG"
+#   FOUND = correctly identified the rule
+#   MISSED = didn't mention it
+#   WRONG = mentioned the topic but got the correction backwards
 
-def score_answer(answer, expected_errors):
-    """Use the LLM to check how many expected errors were found in the answer."""
-    checklist = "\n".join(f"{i+1}. {e}" for i, e in enumerate(expected_errors))
+def check_italic(ans):
+    mentions = re.search(r'italic', ans, re.IGNORECASE)
+    if not mentions:
+        return "MISSED"
+    # Must say NOT to italicize — check for negation near "italic"
+    # Looks for "not italic", "don't italic", "no italic", "non-italic", "aren't italic"
+    correct = re.search(r'(not?\s+italic|don.t\s+italic|no\s+italic|non.?italic)', ans, re.IGNORECASE)
+    return "FOUND" if correct else "WRONG"
 
-    prompt = f"""You are a strict grader. Compare the ANSWER against each CHECKLIST item.
+def check_uss_spacing(ans):
+    # Correct: U. S. S. with spaces between
+    correct = re.search(r'U\.\s+S\.\s+S\.', ans)
+    if correct:
+        return "FOUND"
+    # Wrong: mentions U.S.S. without spaces (the incorrect format) as the recommendation
+    wrong = re.search(r'U\.S\.S\.', ans)
+    return "WRONG" if wrong else "MISSED"
 
-For EACH checklist item:
-1. Quote the specific text from ANSWER that addresses this item (or write "NO MATCH FOUND")
-2. Then write FOUND or MISSED
+def check_hyphen_foot(ans):
+    # Must mention the hyphenated form "150-foot"
+    correct = re.search(r'150-foot', ans, re.IGNORECASE)
+    if correct:
+        return "FOUND"
+    # Wrong: mentions "150 foot" without hyphen as if it's fine
+    wrong = re.search(r'hyphen', ans, re.IGNORECASE)
+    # Mentioned hyphens but didn't get the specific correction
+    return "WRONG" if wrong else "MISSED"
 
-Rules:
-- If the answer says "unable to determine", "not found", or similar - that's MISSED
-- If the answer doesn't specifically mention the rule/concept - that's MISSED
-- Only mark FOUND if you can quote concrete evidence
+def check_navy_yard(ans):
+    correct = re.search(r'navy-yard', ans, re.IGNORECASE)
+    if correct:
+        return "FOUND"
+    # Mentioned "Navy Yard" without hyphen — noticed the topic but wrong
+    wrong = re.search(r'navy\s+yard', ans, re.IGNORECASE)
+    return "WRONG" if wrong else "MISSED"
 
-CHECKLIST:
-{checklist}
+def check_pa_abbrev(ans):
+    correct = re.search(r'\bPa\.', ans)
+    return "FOUND" if correct else "MISSED"
 
-ANSWER:
-{answer}
+def check_lieut(ans):
+    # Must mention the abbreviated form "Lieut." — not just "Lieutenant"
+    correct = re.search(r'Lieut\.', ans)
+    if correct:
+        return "FOUND"
+    # Just saying "Lieutenant Commander" isn't finding the abbreviation rule
+    wrong = re.search(r'Lieutenant\s+Commander', ans)
+    return "WRONG" if wrong else "MISSED"
 
-Format:
-1. [item summary]
-   Evidence: "[quoted text]" OR "NO MATCH FOUND"
-   Verdict: FOUND/MISSED
+def check_usn_spelled(ans):
+    mentions_usn = re.search(r'United States Navy', ans)
+    if not mentions_usn:
+        return "MISSED"
+    # FOUND if it says to keep spelled out / not abbreviate
+    keep = re.search(r'(spell|keep|do not abbreviat|don.t abbreviat|written out|full)', ans, re.IGNORECASE)
+    if keep:
+        return "FOUND"
+    # WRONG if it recommends abbreviating to U.S.N. or U. S. N.
+    abbrev = re.search(r'U\.?\s*S\.?\s*N\.', ans)
+    return "WRONG" if abbrev else "MISSED"
 
-(repeat for each item)
+RULE_CHECKERS = [
+    ("Vessel names NOT italicized in tables", check_italic),
+    ("U. S. S. with periods and spaces", check_uss_spacing),
+    ("Hyphenate 150-foot compound adjective", check_hyphen_foot),
+    ("Hyphenate navy-yard", check_navy_yard),
+    ("Use Pa. abbreviation for Pennsylvania", check_pa_abbrev),
+    ("Abbreviate Lieut. Commander with name", check_lieut),
+    ("Keep United States Navy spelled out", check_usn_spelled),
+]
 
-SCORE: X/{len(expected_errors)}"""
 
-    result = chat_llm([{"role": "user", "content": prompt}], GRADER_MODEL)
-    grading = result["message"]["content"]
-    print(f"\n[GRADING]\n{grading}\n")
+def score_answer(answer):
+    """Deterministic grading — no LLM needed. Returns (score_float, results_list)."""
+    results = []
+    found_count = 0
+    for rule_name, checker in RULE_CHECKERS:
+        verdict = checker(answer)
+        if verdict == "FOUND":
+            found_count += 1
+        results.append((rule_name, verdict))
+        print(f"  {verdict:6s}  {rule_name}")
 
-    # Parse score from response
-    for line in grading.split("\n"):
-        if "SCORE:" in line.upper():
-            try:
-                score_part = line.split(":")[-1].strip()
-                found = int(score_part.split("/")[0])
-                return found / len(expected_errors)
-            except (ValueError, IndexError):
-                pass
-    return 0.0
+    score = found_count / len(RULE_CHECKERS)
+    print(f"\n  SCORE: {found_count}/{len(RULE_CHECKERS)} ({score:.0%})")
+    return score, results
 
 
 def save_result(run_data):
@@ -132,7 +167,7 @@ def plot_results():
 
 
 # --- RUN ---
-rlm = RLM()
+rlm = RLM(root_model="rlm-8b-sft")
 
 with open("gpo_manual.txt", "r", encoding="utf-8") as f:
     context = f.read()
@@ -148,8 +183,12 @@ According to this manual, what are ALL the formatting rules that apply to this e
 answer = rlm.completion(question, context)
 print(f"\nFINAL ANSWER: {answer}")
 
-# Score the answer
-score = score_answer(answer, EXPECTED_ERRORS)
+# --- DETERMINISTIC GRADING ---
+print("\n--- GRADING ---")
+score, rule_results = score_answer(answer)
+
+# --- BEHAVIORAL METRICS ---
+behavior = rlm.get_behavior_stats(len(context))
 
 # Calculate stats
 total_calls = rlm.iterations + rlm.sub_llm_calls
@@ -164,23 +203,35 @@ if os.path.exists(RESULTS_FILE):
 
 run_data = {
     "run_id": run_id,
+    "model": rlm.root_model,
     "timestamp": datetime.now().isoformat(),
     "total_llm_calls": total_calls,
     "root_iterations": rlm.iterations,
     "sub_llm_calls": rlm.sub_llm_calls,
     "time_seconds": round(time_seconds, 2),
     "score": round(score, 2),
+    "unique_keywords": behavior["unique_keywords"],
+    "repeated_keywords": behavior["repeated_keywords"],
+    "chars_read": behavior["chars_read"],
+    "doc_coverage_pct": behavior["doc_coverage_pct"],
+    "keywords_searched": behavior["keywords_searched"],
+    "rule_verdicts": {name: verdict for name, verdict in rule_results},
     "answer_preview": answer[:200],
 }
 
 save_result(run_data)
 
-print(f"\n--- RUN #{run_id} STATS ---")
-print(f"Root iterations: {rlm.iterations}")
-print(f"Sub-LLM calls:   {rlm.sub_llm_calls}")
-print(f"Total LLM calls: {total_calls}")
-print(f"Time spent:       {time_seconds:.1f}s")
-print(f"Score:            {score:.0%}")
+print(f"\n--- RUN #{run_id} ({rlm.root_model}) ---")
+print(f"Root iterations:    {rlm.iterations}")
+print(f"Sub-LLM calls:      {rlm.sub_llm_calls}")
+print(f"Total LLM calls:    {total_calls}")
+print(f"Time spent:          {time_seconds:.1f}s")
+print(f"Score:               {score:.0%}")
+print(f"Unique keywords:     {behavior['unique_keywords']}")
+print(f"Repeated keywords:   {behavior['repeated_keywords']}")
+print(f"Chars read:          {behavior['chars_read']}")
+print(f"Doc coverage:        {behavior['doc_coverage_pct']}%")
+print(f"Keywords:            {behavior['keywords_searched']}")
 print(f"Results saved to {RESULTS_FILE}")
 
 # Plot all results
