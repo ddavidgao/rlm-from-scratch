@@ -167,7 +167,7 @@ def plot_results():
 
 
 # --- RUN ---
-rlm = RLM(root_model="rlm-8b-sft")
+rlm = RLM()
 
 with open("gpo_manual.txt", "r", encoding="utf-8") as f:
     context = f.read()

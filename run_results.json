@@ -198,5 +198,90 @@
       "Keep United States Navy spelled out": "MISSED"
     },
     "answer_preview": "The formatting rules for the table entry are as follows:\n\n1. The title should be in all capital letters.\n2. The ship's name and designation (e.g., U.S.S.) should be centered above the line of dashes.\n"
+  },
+  {
+    "run_id": 15,
+    "model": "rlm-r1-14b:latest",
+    "timestamp": "2026-03-16T15:48:34.128524",
+    "total_llm_calls": 2,
+    "root_iterations": 2,
+    "sub_llm_calls": 0,
+    "time_seconds": 1537.07,
+    "wall_time_seconds": 1576.8,
+    "score": 0.0,
+    "unique_keywords": 0,
+    "repeated_keywords": 0,
+    "chars_read": 500,
+    "doc_coverage_pct": 0.34,
+    "keywords_searched": [],
+    "rule_verdicts": {
+      "Vessel names NOT italicized in tables": "MISSED",
+      "U. S. S. with periods and spaces": "MISSED",
+      "Hyphenate 150-foot compound adjective": "MISSED",
+      "Hyphenate navy-yard": "MISSED",
+      "Use Pa. abbreviation for Pennsylvania": "MISSED",
+      "Abbreviate Lieut. Commander with name": "MISSED",
+      "Keep United States Navy spelled out": "MISSED"
+    },
+    "answer_preview": " ACCEPTANCE.\n\n1. Final acceptance of completed work is not granted until after a final\ninspection by the Superintendent, and upon his written order,\nthe work must be considered as fully accepted unless defects are found\nwhich require correction.\n\n2. After final acceptance, no claims can be made for "
+  },
+  {
+    "run_id": 16,
+    "model": "rlm-8b-sft:latest",
+    "timestamp": "2026-03-16T15:49:26.969055",
+    "total_llm_calls": 5,
+    "root_iterations": 5,
+    "sub_llm_calls": 0,
+    "time_seconds": 33.59,
+    "wall_time_seconds": 47.81,
+    "score": 0.0,
+    "unique_keywords": 2,
+    "repeated_keywords": 2,
+    "chars_read": 500,
+    "doc_coverage_pct": 0.34,
+    "keywords_searched": [
+      "U.S.S.",
+      "US",
+      "U.S.S.",
+      "US"
+    ],
+    "rule_verdicts": {
+      "Vessel names NOT italicized in tables": "MISSED",
+      "U. S. S. with periods and spaces": "WRONG",
+      "Hyphenate 150-foot compound adjective": "MISSED",
+      "Hyphenate navy-yard": "MISSED",
+      "Use Pa. abbreviation for Pennsylvania": "MISSED",
+      "Abbreviate Lieut. Commander with name": "MISSED",
+      "Keep United States Navy spelled out": "MISSED"
+    },
+    "answer_preview": "The formatting rules for the table entry are as follows: 1) The title should be in all capital letters; 2) The ship's name should be abbreviated to USS (not U.S.S.); 3) The length and horsepower of the vessel must be included; 4) The location of the ship is specified by its home port, not a general "
+  },
+  {
+    "run_id": 17,
+    "model": "deepseek-r1:14b",
+    "timestamp": "2026-03-16T16:26:15.234282",
+    "total_llm_calls": 15,
+    "root_iterations": 10,
+    "sub_llm_calls": 5,
+    "time_seconds": 2126.18,
+    "wall_time_seconds": 2203.22,
+    "score": 0.0,
+    "unique_keywords": 1,
+    "repeated_keywords": 0,
+    "chars_read": 5500,
+    "doc_coverage_pct": 3.74,
+    "keywords_searched": [
+      "vessel"
+    ],
+    "rule_verdicts": {
+      "Vessel names NOT italicized in tables": "WRONG",
+      "U. S. S. with periods and spaces": "WRONG",
+      "Hyphenate 150-foot compound adjective": "MISSED",
+      "Hyphenate navy-yard": "MISSED",
+      "Use Pa. abbreviation for Pennsylvania": "MISSED",
+      "Abbreviate Lieut. Commander with name": "MISSED",
+      "Keep United States Navy spelled out": "MISSED"
+    },
+    "answer_preview": "\nThe formatting rules for the table entry based on the manual are:\n\n1. **Italicize Ship Names**: The ship name should be italicized to indicate it is an operational vessel.  \n   - Correction Needed: *U.S.S. Katahdin*\n\n2. **Use Full Title with Periods**: Use \"United States Ship (U.S.S.)\" with periods"
   }
 ]

@@ -35,7 +35,7 @@ DO NOT:
 When done searching, end with: FINAL(your evidence-based answer)"""
 
 class RLM:
-    def __init__(self, root_model = "deepseek-r1:14b", sub_model="qwen3-coder:30b"):
+    def __init__(self, root_model = "rlm-r1-14b:latest", sub_model="rlm-r1-14b:latest"):
         self.time_spent = 0
         self.root_model = root_model
         self.sub_model = sub_model
@@ -112,7 +112,7 @@ class RLM:
 
             response = init["message"]["content"]
 
-            self.time_spent += init["prompt_eval_duration"] + init["eval_duration"]
+            self.time_spent += init.get("prompt_eval_duration", 0) + init.get("eval_duration", 0)
 
             print(f"[DEBUG] LLM response:\n{response}\n---")  # see what LLM says
 
