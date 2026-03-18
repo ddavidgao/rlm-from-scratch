@@ -1,75 +1,154 @@
 # RLM — Recursive Language Model
 
-This is a learning project where I built an agentic document search system from scratch. The idea is simple: instead of letting an LLM answer questions from memory (which it loves to do), you give it a Python REPL and force it to actually search through the document using `find()`, slicing, and `print()`. It writes code, sees the output, writes more code, and keeps going until it finds what it needs. Then it gives a final answer backed by evidence it actually found.
+An agentic document search system that forces LLMs to find evidence instead of hallucinating. Instead of letting a model answer from memory, you give it a Python REPL with search tools and make it actually look through the document. It writes code, sees the output, writes more code, and keeps going until it finds what it needs.
 
-The system runs on local models through Ollama — DeepSeek R1 14B as the main "root" model that drives the search loop, and Qwen3 Coder 30B as the sub-model for answering questions about specific chunks. There's also a grading system that scores how well the RLM found formatting errors in a GPO style manual, so I could track improvement across runs.
+Built to understand how agentic LLM systems work from the ground up — the REPL loop, tool design, prompt engineering, fine-tuning, and the fundamental challenge of getting models to use tools reliably.
 
-I built this to get a deeper understanding of how agentic LLM systems work — the REPL loop, prompt engineering to keep models on track, and the challenge of preventing LLMs from just making things up.
+## Architecture: SearchableDocument
+
+The core innovation is `SearchableDocument` — a wrapper that gives the model high-level search tools instead of a raw string:
+
+```python
+doc.find('keyword')      # → position + 500 chars of surrounding context
+doc.find_all('keyword')  # → all occurrences with previews
+doc.read(start, end)     # → section text (minimum 200 chars enforced)
+doc.toc()                # → auto-detected table of contents (~124 tokens)
+```
+
+This is a deliberate departure from the MIT RLM paper (Zhang, Kraska, Khattab 2025), which gave models a raw `context` string and required them to write multi-line Python for every search. That worked with GPT-5/480B. SearchableDocument offloads the mechanical work to the tool layer so smaller models can focus on *what* to search rather than *how*.
+
+**Auto-TOC detection** identifies document structure automatically — explicit table of contents, ALL CAPS headers, markdown headings, screenplay scene headings (`INT./EXT.`), numbered sections — and falls back to sampling chunk previews. Works on any document type without configuration.
+
+### Guardrails
+
+The REPL loop includes several protections discovered through 29 benchmark runs:
+
+- **Hallucination stripping** — Only the first code block + brief preamble is kept in message history. Everything after is stripped, preventing models from seeing their own fabricated outputs.
+- **Think token handling** — `<think>...</think>` blocks from R1-style models are stripped before processing.
+- **Output truncation** — Exec output capped at 3000 chars to prevent context explosion.
+- **Auto-eval fallback** — If code produces no print output, the last expression is evaluated and returned automatically.
+- **First block only** — Only the first code block per response is executed, forcing one-search-per-iteration discipline.
+- **Repetition detection** — Identical consecutive responses trigger a nudge to try different keywords.
+- **Stale keyword detection** — Re-searching already-tried terms triggers a suggestion to vary the search.
+- **Format drift recovery** — After 3 consecutive turns without code, the model is forced to give a FINAL answer.
+
+## Benchmark Results
+
+Tested across 6 models, 3 architecture versions, 29 total runs on a GPO Style Manual formatting task (7 rules to find):
+
+### Architecture Progression
+
+| Version | Key Change | Best Score | Best Model |
+|---------|-----------|------------|------------|
+| v1 (original) | Raw `context` string | 14% (1/7) | rlm-8b-sft |
+| v2 (guardrails) | Think stripping, output truncation | 14% (1/7) | rlm-8b-sft |
+| v3 (SearchableDocument) | `doc.find()`, auto-TOC, hallucination stripping | 0% formal / found correct evidence | qwen3-coder:30b |
+
+### Model Comparison (v3 architecture)
+
+| Model | Size | GPU Fit | Follows Workflow | Searches | Interprets |
+|-------|------|---------|-----------------|----------|------------|
+| lfm2.5-thinking 1.2B | 731MB | 100% | No | No | No |
+| rlm-r1-14b (SFT) | 9GB | 100% | No | No | No |
+| deepseek-r1:14b | 9GB | 100% | No | No | No |
+| qwen2.5-coder:14b | 9GB | 100% | Mostly | Partially | No |
+| qwen3-coder:30b | 18GB | 77% | Yes | Yes | Almost |
+| Claude (via CLI) | Cloud | N/A | Yes | Yes | Yes |
+
+### Key Findings
+
+**The architecture works.** qwen3-coder:30b searched 61 unique keywords, navigated to the correct document sections using `doc.toc()`, and found real evidence (e.g., `U. S. gunboat _Katahdin_`). Claude with the same architecture answered 7/7 questions correctly on a fresh GAO report it had never seen, searching `deferred resignation`, `commissioners`, `paper returns`, `phone calls`, `December 2025`, and `Recommendations for Executive Action` — all from real document reads.
+
+**The bottleneck is model reasoning, not architecture.** qwen3-coder:30b found the right sections but scored 0/7 on the formal grading because it couldn't make the final interpretive leap (e.g., connecting `_Katahdin_` underscore notation to "italics" to "the rule says no italics in tables"). The grading system is also too rigid — regex pattern matching misses correct-but-differently-worded answers.
+
+**SFT teaches format, not discipline.** Fine-tuned models (1B, 8B, 14B) learned to write `context.find()` code blocks but not to stop, wait for output, and react to real results. They hallucinate outputs or give up after 2-3 iterations. This is a behavior discipline problem better suited to RL than SFT.
+
+**R1-style models are problematic.** DeepSeek R1 generates thousands of hidden `<think>` tokens per turn (1537 seconds for 2 iterations). Even with think-token stripping, they ignore search instructions and answer from memory.
 
 ## Project Structure
 
-- `src/` — the core RLM runtime. `rlm.py` handles the REPL loop (LLM writes code, we exec it, feed output back) and `llm.py` wraps the Ollama API
-- `main.py` — runs the full pipeline: asks a question about the GPO manual, scores the answer, and plots performance over time
-- `ml-training/` — fine-tuning Llama 3.2 1B to learn the RLM search workflow
-- `karpathy-gpt/` — building a transformer from scratch following Karpathy's tutorial
+- `src/rlm.py` — SearchableDocument + REPL loop with all guardrails
+- `src/llm.py` — Ollama API wrapper
+- `main.py` — GPO manual eval pipeline with deterministic rule checkers
+- `eval_compare.py` — multi-model benchmark runner with chart generation
+- `run_results.json` — all benchmark runs with behavioral metrics
+- `ml-training/` — fine-tuning pipeline (QLoRA via Unsloth)
+- `karpathy-gpt/` — transformer from scratch (Karpathy tutorial)
 
 ## ml-training
 
-This is where I fine-tuned Llama 3.2 1B Instruct to learn the RLM search behavior instead of relying on huge models like DeepSeek R1 to follow the workflow. The goal was to take a tiny 1B parameter model and teach it to write Python search code when given a document, rather than answering from memory.
+Fine-tuned three model sizes on 155 synthetic multi-turn RLM search conversations:
 
-The training data is 155 synthetic multi-turn conversations generated by `generate_training_data.py`. Each example simulates the full RLM loop — the model gets a question, writes `context.find()` code, sees the real `exec()` output, and either searches more or gives a final answer. The documents are a mix of Project Gutenberg texts and synthetic docs to keep things diverse. Categories cover clean searches, keyword retries, dead ends, error recovery, and more.
+| Model | Base | LoRA Params | Training Time | Output |
+|-------|------|-------------|---------------|--------|
+| 1B | Llama 3.2 1B Instruct | 3.4M (0.28%) | <1 min | `outputs/1b/rlm_lora_v2/` |
+| 8B | Llama 3.1 8B Instruct | ~13M | ~3 min | `outputs/8b/rlm_lora_v3/` |
+| 14B | DeepSeek R1 Distill Qwen 14B | ~17M | ~5 min | `outputs/r1/rlm_lora_v4/` |
 
-Fine-tuning uses QLoRA through Unsloth — the base model is loaded in 4-bit, and only LoRA adapters on the attention layers get trained (3.4M params out of 1.24B, about 0.28%). It trains in under a minute on an RTX 5080 Laptop GPU with 17GB VRAM. Loss went from 3.54 down to around 1.0 without overfitting.
-
-I also scaled up to **Llama 3.1 8B Instruct** using the same QLoRA approach and training data. The 8B adapter is at `outputs/8b/rlm_lora_v3/`. After training, I deployed it to Ollama so `rlm.py` can use it as a drop-in replacement for DeepSeek R1.
+Training uses QLoRA (4-bit base, LoRA on attention layers) via Unsloth in Docker on WSL. Full deployment pipeline: LoRA adapter → merged HF model → GGUF F16 → GGUF Q4_K_M → Ollama registration.
 
 ### Deploying an SFT Model to Ollama
 
-The full pipeline from trained LoRA adapter to a model callable via Ollama. Five stages, each producing a different artifact:
+Five stages, each producing a different artifact:
 
-**1. LoRA Adapter** → Small delta weights (~50MB). Just the changes from fine-tuning, can't run standalone.
+**1. LoRA Adapter** → Small delta weights (~50MB). Just the changes from fine-tuning.
 
-**2. Merged HF Model** → LoRA weights merged into the base model, saved as HuggingFace safetensors (~15GB at fp16).
+**2. Merged HF Model** → LoRA weights merged into base model, saved as HuggingFace safetensors.
 ```python
-# In notebook (Docker) — load from adapter dir, NOT base model + load_adapter()
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name="/workspace/outputs/8b/rlm_lora_v3",  # adapter dir has adapter_config.json
+    model_name="/workspace/outputs/8b/rlm_lora_v3",
     max_seq_length=1024, load_in_4bit=True
 )
 model.save_pretrained_merged("/workspace/outputs/8b/rlm-8b-sft-merged", tokenizer)
 ```
 
-**3. GGUF f16** → Repackaged into llama.cpp's single-file format. Same weights, different container.
+**3. GGUF F16** → Repackaged into llama.cpp's single-file format.
 ```bash
-# In WSL — just the Python converter, no C++ build needed
-python3 ~/llama.cpp/convert_hf_to_gguf.py /mnt/c/.../rlm-8b-sft-merged --outtype f16
+python3 ~/llama.cpp/convert_hf_to_gguf.py /path/to/merged --outtype f16
 ```
 
-**4. GGUF Quantized (Q4_K_M)** → Compresses fp16 to 4-bit. 15GB → ~4.6GB.
+**4. GGUF Q4_K_M** → Compressed from fp16 to 4-bit. Build llama-quantize with `-DGGML_OPENMP=OFF` to avoid Docker libgomp issues.
 ```bash
-# Copy into WSL native fs first — quantizing across /mnt/c/ will crash your system
-cp /mnt/c/.../rlm-8B-sft-merged-F16.gguf ~/rlm-f16.gguf
-~/llama.cpp/build/bin/llama-quantize ~/rlm-f16.gguf ~/rlm-Q4_K_M.gguf Q4_K_M
-cp ~/rlm-Q4_K_M.gguf /mnt/c/.../outputs/8b/
+llama-quantize input-F16.gguf output-Q4_K_M.gguf Q4_K_M
 ```
 
-**5. Ollama Model** → Register the GGUF with a Modelfile that defines the chat template.
+**5. Ollama Model** → Register with a Modelfile specifying the chat template.
 ```bash
 ollama create rlm-8b-sft -f Modelfile
 ```
-The Modelfile points to the GGUF and specifies the Llama 3.1 chat template (special tokens like `<|start_header_id|>`, `<|eot_id|>`). Without it, Ollama wouldn't know how to format messages.
-
-After this: `RLM(root_model="rlm-8b-sft")` in `rlm.py`.
 
 ### Gotchas
 
-- **`load_adapter()` vs `from_pretrained(adapter_dir)`**: `load_adapter` doesn't wrap as PeftModel, so unsloth's merge silently skips. Always load from the adapter dir directly.
-- **Toggling adapters for eval**: `model.disable_adapters()` / `model.enable_adapters()` to A/B test base vs SFT without reloading.
+- **`load_adapter()` vs `from_pretrained(adapter_dir)`**: `load_adapter` doesn't wrap as PeftModel, so Unsloth's merge silently skips.
 - **Don't quantize across WSL mounts**: `/mnt/c/` I/O bridge can't handle 20GB of reads+writes. Copy to `~/`, quantize, copy back.
-- **llama.cpp in Docker**: Missing `libgomp` (OpenMP). Build on WSL instead.
+- **llama.cpp in Docker**: Missing `libgomp` (OpenMP). Build with `-DGGML_OPENMP=OFF` or install `libgomp-dev`.
+
+## Next Phase: Tool-Use Discipline Training
+
+The current bottleneck isn't model intelligence — it's tool-use discipline. Small models can write search code but can't reliably follow the REPL loop (write one block → stop → wait → react to real output). This is a behavior pattern, not a reasoning task.
+
+### The Research Gap
+
+- **Single-turn function calling** is solved — xLAM-1B beats GPT-3.5-Turbo (Berkeley BFCL benchmark)
+- **Multi-turn agentic RL** is exploding — Agent-R1, AGENTRL, RLEF, ToolRM all dropped in 2025
+- **REPL-style iterative tool use on small models (1-8B)** is the open area
+
+Key evidence that small models can do this:
+- ReAct fine-tuned 8B outperformed prompting-only 62B (Google, 2022)
+- GRPO on Qwen-2-7B outperformed vanilla Qwen-2-72B on function calling
+- Toolformer showed tool-use capability emerges at ~775M parameters
+
+### Planned Approach
+
+1. **Generate paired training data**: good (one code block → stop → react to real output) vs bad (hallucinate output, answer from memory, write multiple blocks)
+2. **Train with DPO/GRPO** to prefer disciplined tool-use behavior
+3. **SearchableDocument handles the search intelligence** — model just needs to use the tools reliably
+4. **Eval on diverse documents** (manuals, scripts, reports, transcripts)
+
+### Key Risk
+
+The Reasoning Trap (Oct 2025): RL-enhanced reasoning proportionally increases tool hallucination. No known solution that doesn't sacrifice capability.
 
 ## karpathy-gpt
 
-This is a separate section where I worked through Andrej Karpathy's "Let's build GPT from scratch" series to understand how transformers actually work under the hood. It starts from a basic bigram model that predicts the next character using nothing but a lookup table, and incrementally adds the pieces that make transformers work — positional embeddings, self-attention, multi-head attention, and feed-forward networks.
-
-The dataset is Tiny Shakespeare (~1.1M characters). The model learns at the character level, so it's predicting one character at a time. Early outputs are complete gibberish, but as each component gets added the generated text starts looking more and more like English. Concepts like attention masks, key-query-value, softmax over logits, and cross-entropy loss make way more sense after implementing them by hand.
+Built a transformer from scratch following Andrej Karpathy's "Let's build GPT from scratch" series. Starts from a bigram model and incrementally adds positional embeddings, self-attention, multi-head attention, and feed-forward networks. Character-level prediction on Tiny Shakespeare (~1.1M chars).
